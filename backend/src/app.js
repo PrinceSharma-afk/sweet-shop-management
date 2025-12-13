@@ -11,7 +11,7 @@ app.post('/auth/login', login);
 
 // Sweet routes
 app.get('/sweets', getAllSweets);
-app.get('/sweets', searchSweets); // will handle query search
+app.get('/sweets/search', searchSweets); // separate route for search
 app.post('/sweets', createSweet);
 
 module.exports = app;
