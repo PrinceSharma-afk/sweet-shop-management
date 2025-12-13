@@ -1,9 +1,11 @@
-const express = require('express');
-const app = express();
-app.use(express.json());
+const request = require('supertest');
+const app = require('../app'); // app doesn't exist yet
 
-// Import auth routes
-const authRoutes = require('./routes/auth');
-app.use('/auth', authRoutes);
-
-module.exports = app;
+describe('Authentication Tests', () => {
+  test('User registration with validation', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: '', password: '123' }); // invalid username
+    expect(res.statusCode).toBe(400);
+  });
+});
