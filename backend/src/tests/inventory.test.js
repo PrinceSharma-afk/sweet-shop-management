@@ -1,59 +1,79 @@
 const request = require('supertest');
 const app = require('../app');
+const { sweetsInventory } = require('../controllers/inventory.controller');
 
 describe('Inventory Tests', () => {
-  beforeAll(async () => {
-    // Seed some sweets for inventory
-    await request(app).post('/sweets').send({ name: 'Ladoo', price: 10 });
-    await request(app).post('/sweets').send({ name: 'Barfi', price: 15 });
+  const sweetName = 'Ladoo';
+
+  beforeEach(() => {
+    // Reset inventory before each test
+    sweetsInventory[sweetName] = { quantity: 5, price: 50 };
   });
 
+  // ----- Purchase Sweet -----
   test('Purchase sweet with quantity reduction', async () => {
+    const initialQuantity = sweetsInventory[sweetName].quantity;
+
     const res = await request(app)
       .post('/inventory/purchase')
-      .send({ name: 'Ladoo', quantity: 2 });
+      .send({ name: sweetName, quantity: 2 });
 
-    // Will FAIL initially
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toBe('Purchase successful');
+    expect(sweetsInventory[sweetName].quantity).toBe(initialQuantity - 2);
   });
 
+  // ----- Restock Sweet -----
   test('Restock functionality (admin only)', async () => {
+    const initialQuantity = sweetsInventory[sweetName].quantity;
+
     const res = await request(app)
       .post('/inventory/restock')
-      .send({ name: 'Ladoo', quantity: 5 });
+      .send({ name: sweetName, quantity: 3 });
 
-    // Will FAIL initially
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe('Restocked successfully');
+    expect(res.body.message).toBe('Restock successful');
+    expect(sweetsInventory[sweetName].quantity).toBe(initialQuantity + 3);
   });
 
+  // ----- Quantity Validation -----
   test('Quantity validation', async () => {
     const res = await request(app)
       .post('/inventory/purchase')
-      .send({ name: 'Ladoo', quantity: -1 });
+      .send({ name: sweetName, quantity: -1 });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe('Invalid quantity');
+    expect(res.body.error).toBe('Invalid quantity or sweet');
   });
 
+  // ----- Out of Stock -----
   test('Out of stock handling', async () => {
+    const initialQuantity = sweetsInventory[sweetName].quantity;
+
     const res = await request(app)
       .post('/inventory/purchase')
-      .send({ name: 'Barfi', quantity: 100 });
+      .send({ name: sweetName, quantity: initialQuantity + 1 });
 
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe('Out of stock');
   });
 
+  // ----- Concurrent Purchase -----
   test('Concurrent purchase handling', async () => {
-    // Simulate two purchases at the same time
-    const purchase1 = request(app).post('/inventory/purchase').send({ name: 'Ladoo', quantity: 3 });
-    const purchase2 = request(app).post('/inventory/purchase').send({ name: 'Ladoo', quantity: 3 });
+    const initialQuantity = sweetsInventory[sweetName].quantity;
 
-    const results = await Promise.all([purchase1, purchase2]);
+    // Simulate two simultaneous purchases
+    const requests = [
+      request(app).post('/inventory/purchase').send({ name: sweetName, quantity: 3 }),
+      request(app).post('/inventory/purchase').send({ name: sweetName, quantity: 3 }),
+    ];
 
-    // At least one should fail due to insufficient stock
+    const results = await Promise.all(requests);
+
+    // At least one request should fail due to insufficient stock
     expect(results.some(r => r.statusCode === 400)).toBe(true);
+
+    // Inventory should not go negative
+    expect(sweetsInventory[sweetName].quantity).toBeGreaterThanOrEqual(0);
   });
 });
