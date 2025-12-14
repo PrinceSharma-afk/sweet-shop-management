@@ -1,19 +1,54 @@
+// -------------------- USER DASHBOARD --------------------
+
+// React hooks for lifecycle and state management
 import { useEffect, useState } from "react";
+
+// Sweet-related API functions
 import { getAllSweets, searchSweets } from "../api/sweets";
+
+// Inventory API function for purchasing sweets
 import { purchaseSweet } from "../api/inventory";
+
+// Dashboard-specific styles
 import "../styles/dashboard.css";
 
+/*
+  Dashboard Component
+
+  Provides a user-facing dashboard to:
+  - View all available sweets
+  - Search sweets using filters
+  - Purchase sweets (1 unit at a time)
+
+  All routes are protected and require authentication.
+*/
 export default function Dashboard() {
+  // -------------------- STATE --------------------
+
+  // List of sweets displayed on the dashboard
   const [sweets, setSweets] = useState([]);
+
+  // Search/filter parameters
   const [filters, setFilters] = useState({
     name: "",
     category: "",
     minPrice: "",
     maxPrice: "",
   });
+
+  // Error message for UI feedback
   const [error, setError] = useState("");
+
+  // Loading state for initial data fetch
   const [loading, setLoading] = useState(true);
 
+  /*
+    Fetch all sweets from backend
+
+    Used:
+    - On initial page load
+    - After successful purchase
+  */
   const fetchSweets = async () => {
     try {
       const res = await getAllSweets();
@@ -25,10 +60,17 @@ export default function Dashboard() {
     }
   };
 
+  // Load sweets when component mounts
   useEffect(() => {
     fetchSweets();
   }, []);
 
+  /*
+    Handle Search
+
+    Sends filter parameters to backend
+    and updates sweets list with results.
+  */
   const handleSearch = async () => {
     try {
       const res = await searchSweets(filters);
@@ -38,6 +80,12 @@ export default function Dashboard() {
     }
   };
 
+  /*
+    Handle Purchase
+
+    Purchases 1 unit of the selected sweet.
+    Refreshes sweets list after successful purchase.
+  */
   const handlePurchase = async (name) => {
     try {
       await purchaseSweet({ name, quantity: 1 });
@@ -47,16 +95,18 @@ export default function Dashboard() {
     }
   };
 
+  // Show loading state while data is being fetched
   if (loading) return <p>Loading sweets...</p>;
 
   return (
     <div className="container">
       <h2>User Dashboard</h2>
 
+      {/* Display error message if any operation fails */}
       {error && <p className="error">{error}</p>}
 
       {/* =========================
-          Search Section
+          SEARCH SECTION
       ========================= */}
       <div className="search-card">
         <h3 className="section-title">Search Sweets</h3>
@@ -121,10 +171,11 @@ export default function Dashboard() {
       <hr className="section-divider" />
 
       {/* =========================
-          Sweets Section
+          SWEETS LIST SECTION
       ========================= */}
       <h3 className="section-title">Sweets</h3>
 
+      {/* Show empty state if no sweets match filters */}
       {sweets.length === 0 ? (
         <p>No sweets available</p>
       ) : (
@@ -141,6 +192,7 @@ export default function Dashboard() {
               </div>
 
               <div className="sweet-action">
+                {/* Disable purchase if stock is zero */}
                 <button
                   className="btn-primary"
                   disabled={sweet.quantity === 0}

@@ -1,21 +1,56 @@
+// -------------------- ADMIN DASHBOARD --------------------
+
+// React hooks for lifecycle and state management
 import { useEffect, useState } from "react";
+
+// Sweet management API functions
 import {
   getAllSweets,
   createSweet,
   deleteSweet,
   updateSweet,
 } from "../api/sweets";
+
+// Inventory-specific API function
 import { restockSweet } from "../api/inventory";
+
+// Admin page styles
 import "../styles/admin.css";
 
+/*
+  Admin Component
+
+  Provides an admin-only dashboard to:
+  - View all sweets
+  - Add new sweets
+  - Delete sweets
+  - Update sweet price
+  - Restock inventory
+
+  All actions are protected by backend admin authorization.
+*/
 export default function Admin() {
+  // -------------------- STATE --------------------
+
+  // List of all sweets in inventory
   const [sweets, setSweets] = useState([]);
+
+  // Form fields for adding a new sweet
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
+
+  // Error message for UI feedback
   const [error, setError] = useState("");
 
+  /*
+    Fetch all sweets from backend
+
+    Used:
+    - On initial page load
+    - After any create/update/delete/restock action
+  */
   const fetchSweets = async () => {
     try {
       const res = await getAllSweets();
@@ -25,10 +60,20 @@ export default function Admin() {
     }
   };
 
+  // Load sweets once when component mounts
   useEffect(() => {
     fetchSweets();
   }, []);
 
+  /*
+    Handle Add Sweet
+
+    Flow:
+    - Prevent default form submission
+    - Send sweet data to backend
+    - Reset form fields
+    - Refresh sweets list
+  */
   const handleAddSweet = async (e) => {
     e.preventDefault();
     setError("");
@@ -41,16 +86,24 @@ export default function Admin() {
         quantity: Number(quantity),
       });
 
+      // Clear form after successful creation
       setName("");
       setCategory("");
       setPrice("");
       setQuantity("");
+
+      // Refresh inventory list
       fetchSweets();
     } catch (err) {
       setError(err.response?.data?.error || "Failed to add sweet");
     }
   };
 
+  /*
+    Handle Delete Sweet
+
+    Removes a sweet entirely from inventory
+  */
   const handleDelete = async (name) => {
     try {
       await deleteSweet(name);
@@ -60,11 +113,23 @@ export default function Admin() {
     }
   };
 
+  /*
+    Handle Price Update
+
+    Triggered when admin updates price input
+    Uses onBlur to avoid unnecessary API calls
+  */
   const handleUpdatePrice = async (name, price) => {
     await updateSweet(name, { price: Number(price) });
     fetchSweets();
   };
 
+  /*
+    Handle Restock Sweet
+
+    Increases available quantity for a sweet
+    Triggered via restock input field
+  */
   const handleRestock = async (name, qty) => {
     await restockSweet({ name, quantity: Number(qty) });
     fetchSweets();
@@ -73,10 +138,12 @@ export default function Admin() {
   return (
     <div className="container">
       <h2>Admin Dashboard</h2>
+
+      {/* Display error message if any action fails */}
       {error && <p className="error">{error}</p>}
 
       {/* =========================
-          Add Sweet (2x2)
+          ADD SWEET SECTION (2x2 GRID)
       ========================= */}
       <div className="card card-add">
         <h3 className="section-title">Add Sweet</h3>
@@ -121,7 +188,7 @@ export default function Admin() {
       <hr className="section-divider" />
 
       {/* =========================
-          Manage Sweets (2x2)
+          MANAGE SWEETS SECTION
       ========================= */}
       <h3 className="section-title">Manage Sweets</h3>
 
@@ -134,6 +201,7 @@ export default function Admin() {
                 <div className="meta">Stock: {sweet.quantity}</div>
               </div>
 
+              {/* Delete sweet permanently */}
               <button
                 className="btn-danger"
                 onClick={() => handleDelete(sweet.name)}
@@ -142,7 +210,9 @@ export default function Admin() {
               </button>
             </div>
 
+            {/* Inline admin actions */}
             <div className="admin-actions">
+              {/* Update price on input blur */}
               <input
                 type="number"
                 placeholder="New Price"
@@ -152,6 +222,7 @@ export default function Admin() {
                 }
               />
 
+              {/* Restock quantity on input blur */}
               <input
                 type="number"
                 placeholder="Restock Qty"

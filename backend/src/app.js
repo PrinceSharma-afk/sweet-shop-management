@@ -22,7 +22,7 @@ app.use(
 );
 
 /* =========================
-   API ROUTES (SPEC-COMPLIANT)
+   API ROUTES
 ========================= */
 app.use("/api/auth", authRoutes);
 app.use("/api/sweets", sweetRoutes);

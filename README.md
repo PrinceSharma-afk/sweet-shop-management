@@ -59,8 +59,8 @@ Admin access is not selectable or configurable from the frontend UI by design.
 
 * Allowing users to self-select admin access from the frontend would be a security risk
 * Admin capabilities (adding, updating, deleting sweets, restocking inventory) are protected by:
-  * JWT authentication
-  * Backend role verification middleware
+* JWT authentication
+* Backend role verification middleware
 
 This design ensures:
 
@@ -111,10 +111,10 @@ The following backend test files are included in the final submission:
 
 ---
 
-### Note
+### Notes
 
-Some route and data model choices were intentionally kept simple once the core functionality was stable; in particular, sweets are identified by name instead of numeric IDs to avoid unnecessary refactoring while preserving correctness and testability.
-
+* Some route and data model choices were intentionally kept simple once the core functionality was stable; in particular, sweets are identified  by name instead of numeric IDs to avoid unnecessary refactoring while preserving correctness and testability.
+* The backend purchase API supports variable quantities, but the frontend intentionally limits purchases to one item per action to keep the user experience simple and focused.
 ---
 
 ## Tech Stack
