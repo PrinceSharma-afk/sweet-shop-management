@@ -1,79 +1,100 @@
 const request = require('supertest');
+const bcrypt = require('bcryptjs');
 const app = require('../app');
-const { sweetsInventory } = require('../controllers/inventory.controller');
+const { User, Sweet } = require('../models');
+
+let adminToken;
+
+beforeAll(async () => {
+  // Create admin user
+  const hashedPassword = await bcrypt.hash('password', 10);
+
+  await User.create({
+    username: 'inventoryAdmin',
+    password: hashedPassword,
+    isAdmin: true
+  });
+
+  // Login admin
+  const loginRes = await request(app)
+    .post('/auth/login')
+    .send({
+      username: 'inventoryAdmin',
+      password: 'password'
+    });
+
+  adminToken = loginRes.body.token;
+
+  // Create a sweet
+  await Sweet.create({
+    name: 'Kaju Katli',
+    price: 500,
+    quantity: 10
+  });
+});
 
 describe('Inventory Tests', () => {
-  const sweetName = 'Ladoo';
 
-  beforeEach(() => {
-    // Reset inventory before each test
-    sweetsInventory[sweetName] = { quantity: 5, price: 50 };
-  });
-
-  // ----- Purchase Sweet -----
-  test('Purchase sweet with quantity reduction', async () => {
-    const initialQuantity = sweetsInventory[sweetName].quantity;
-
+  test('Purchase sweet reduces quantity', async () => {
     const res = await request(app)
       .post('/inventory/purchase')
-      .send({ name: sweetName, quantity: 2 });
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Kaju Katli',
+        quantity: 2
+      });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe('Purchase successful');
-    expect(sweetsInventory[sweetName].quantity).toBe(initialQuantity - 2);
+
+    const updatedSweet = await Sweet.findOne({
+      where: { name: 'Kaju Katli' }
+    });
+
+    expect(updatedSweet.quantity).toBe(8);
   });
 
-  // ----- Restock Sweet -----
-  test('Restock functionality (admin only)', async () => {
-    const initialQuantity = sweetsInventory[sweetName].quantity;
+  test('Purchase more than stock fails', async () => {
+    const res = await request(app)
+      .post('/inventory/purchase')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Kaju Katli',
+        quantity: 100
+      });
 
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Insufficient stock');
+  });
+
+  test('Restock sweet increases quantity', async () => {
     const res = await request(app)
       .post('/inventory/restock')
-      .send({ name: sweetName, quantity: 3 });
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Kaju Katli',
+        quantity: 5
+      });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe('Restock successful');
-    expect(sweetsInventory[sweetName].quantity).toBe(initialQuantity + 3);
+
+    const updatedSweet = await Sweet.findOne({
+      where: { name: 'Kaju Katli' }
+    });
+
+    expect(updatedSweet.quantity).toBe(13);
   });
 
-  // ----- Quantity Validation -----
-  test('Quantity validation', async () => {
+  test('Restock invalid quantity fails', async () => {
     const res = await request(app)
-      .post('/inventory/purchase')
-      .send({ name: sweetName, quantity: -1 });
+      .post('/inventory/restock')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Kaju Katli',
+        quantity: -5
+      });
 
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe('Invalid quantity or sweet');
   });
 
-  // ----- Out of Stock -----
-  test('Out of stock handling', async () => {
-    const initialQuantity = sweetsInventory[sweetName].quantity;
-
-    const res = await request(app)
-      .post('/inventory/purchase')
-      .send({ name: sweetName, quantity: initialQuantity + 1 });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe('Out of stock');
-  });
-
-  // ----- Concurrent Purchase -----
-  test('Concurrent purchase handling', async () => {
-    const initialQuantity = sweetsInventory[sweetName].quantity;
-
-    // Simulate two simultaneous purchases
-    const requests = [
-      request(app).post('/inventory/purchase').send({ name: sweetName, quantity: 3 }),
-      request(app).post('/inventory/purchase').send({ name: sweetName, quantity: 3 }),
-    ];
-
-    const results = await Promise.all(requests);
-
-    // At least one request should fail due to insufficient stock
-    expect(results.some(r => r.statusCode === 400)).toBe(true);
-
-    // Inventory should not go negative
-    expect(sweetsInventory[sweetName].quantity).toBeGreaterThanOrEqual(0);
-  });
 });

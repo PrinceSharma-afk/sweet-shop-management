@@ -1,32 +1,88 @@
-// Temporary in-memory storage
-const sweets = [
-  { name: 'Ladoo', price: 10 },
-  { name: 'Barfi', price: 15 },
-];
+const Sweet = require('../models/Sweet');
+const { Op } = require('sequelize');
 
-exports.getAllSweets = (req, res) => {
-  res.status(200).json(sweets);
+// Get all sweets
+exports.getAllSweets = async (req, res) => {
+  try {
+    const sweets = await Sweet.findAll();
+    res.status(200).json(sweets);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
 };
 
-exports.searchSweets = (req, res) => {
-  const { search = '' } = req.query; // default to empty string if missing
-  const filtered = sweets.filter(s =>
-    s.name.toLowerCase().includes(search.toLowerCase())
-  );
-  res.status(200).json(filtered);
+// Search sweets by name (case-insensitive)
+exports.searchSweets = async (req, res) => {
+  const { search } = req.query;
+  try {
+    const sweets = await Sweet.findAll({
+      where: search
+        ? { name: { [Op.iLike]: `%${search}%` } }
+        : {}
+    });
+    res.status(200).json(sweets);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
 };
 
-exports.createSweet = (req, res) => {
-  const { name, price } = req.body;
+// Create a new sweet (admin only)
+exports.createSweet = async (req, res) => {
+  const { name, price, quantity } = req.body;
 
-  if (!name || name.length === 0) {
-    return res.status(400).json({ error: 'Sweet name is required' });
+  if (!name || price == null || price < 0 || quantity < 0) {
+    return res.status(400).json({ error: 'Invalid sweet data' });
   }
 
-  if (price === undefined || price < 0) {
-    return res.status(400).json({ error: 'Valid price is required' });
-  }
+  try {
+    const [sweet, created] = await Sweet.findOrCreate({
+      where: { name },
+      defaults: { price, quantity }
+    });
 
-  sweets.push({ name, price });
-  res.status(201).json({ message: 'Sweet created' });
+    if (!created) return res.status(400).json({ error: 'Sweet already exists' });
+
+    res.status(201).json({ message: 'Sweet created', sweet });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Update sweet details (admin only)
+exports.updateSweet = async (req, res) => {
+  const { name } = req.params;
+  const { price, quantity } = req.body;
+
+  try {
+    const sweet = await Sweet.findOne({ where: { name } });
+    if (!sweet) return res.status(404).json({ error: 'Sweet not found' });
+
+    if (price != null && price >= 0) sweet.price = price;
+    if (quantity != null && quantity >= 0) sweet.quantity = quantity;
+
+    await sweet.save();
+    res.status(200).json({ message: 'Sweet updated', sweet });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Delete a sweet (admin only)
+exports.deleteSweet = async (req, res) => {
+  const { name } = req.params;
+
+  try {
+    const sweet = await Sweet.findOne({ where: { name } });
+    if (!sweet) return res.status(404).json({ error: 'Sweet not found' });
+
+    await sweet.destroy();
+    res.status(200).json({ message: 'Sweet deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
 };

@@ -1,38 +1,37 @@
-// Temporary in-memory inventory storage
-const sweetsInventory = {}; // keeps track of sweet quantities and prices
+const Sweet = require('../models/Sweet');
 
-// Purchase a sweet
-exports.purchaseSweet = (req, res) => {
+exports.purchaseSweet = async (req, res) => {
   const { name, quantity } = req.body;
+  if (!name || quantity <= 0) return res.status(400).json({ error: 'Invalid quantity or sweet' });
 
-  if (!name || !quantity || quantity <= 0 || !sweetsInventory[name]) {
-    return res.status(400).json({ error: 'Invalid quantity or sweet' });
+  try {
+    const sweet = await Sweet.findOne({ where: { name } });
+    if (!sweet) return res.status(400).json({ error: 'Sweet not found' });
+if (sweet.quantity < quantity) return res.status(400).json({ error: 'Insufficient stock' });
+
+
+    sweet.quantity -= quantity;
+    await sweet.save();
+
+    res.status(200).json({ message: 'Purchase successful', sweet });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
   }
-
-  if (sweetsInventory[name].quantity < quantity) {
-    return res.status(400).json({ error: 'Out of stock' });
-  }
-
-  sweetsInventory[name].quantity -= quantity;
-  return res.status(200).json({ message: 'Purchase successful' });
 };
 
-// Restock a sweet (admin only)
-exports.restockSweet = (req, res) => {
+exports.restockSweet = async (req, res) => {
   const { name, quantity } = req.body;
+  if (!name || quantity <= 0) return res.status(400).json({ error: 'Invalid quantity or sweet' });
 
-  if (!name || !quantity || quantity <= 0) {
-    return res.status(400).json({ error: 'Invalid quantity' });
+  try {
+    const sweet = await Sweet.findOne({ where: { name } });
+    if (!sweet) return res.status(400).json({ error: 'Sweet not found' });
+
+    sweet.quantity += quantity;
+    await sweet.save();
+
+    res.status(200).json({ message: 'Restock successful', sweet });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
   }
-
-  if (!sweetsInventory[name]) {
-    sweetsInventory[name] = { quantity, price: 50 }; // default price
-  } else {
-    sweetsInventory[name].quantity += quantity;
-  }
-
-  return res.status(200).json({ message: 'Restock successful' });
 };
-
-// Export inventory for tests if needed
-exports.sweetsInventory = sweetsInventory;

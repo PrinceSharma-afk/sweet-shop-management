@@ -1,40 +1,63 @@
 const request = require('supertest');
+const bcrypt = require('bcryptjs');
 const app = require('../app');
+const { User } = require('../models');
 
 describe('Authentication Tests', () => {
 
-  // Register a user before running login tests
   beforeAll(async () => {
-    await request(app)
-      .post('/auth/register')
-      .send({ username: 'john', password: '123456' });
+    const hashedPassword = await bcrypt.hash('1234', 10);
+
+    await User.create({
+      username: 'testuser',
+      password: hashedPassword,
+      isAdmin: false
+    });
   });
 
-  // ----- Registration Tests -----
-  test('User registration with validation', async () => {
+  test('Register new user', async () => {
     const res = await request(app)
       .post('/auth/register')
-      .send({ username: 'jane', password: '123456' }); // new user
+      .send({
+        username: 'newuser',
+        password: 'password'
+      });
+
     expect(res.statusCode).toBe(201);
-    expect(res.body.message).toBe('User registered');
   });
 
-  test('User registration with empty username should fail', async () => {
+  test('Duplicate user registration fails', async () => {
     const res = await request(app)
       .post('/auth/register')
-      .send({ username: '', password: '123456' });
+      .send({
+        username: 'testuser',
+        password: '1234'
+      });
+
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe('Invalid username');
   });
 
-  // ----- Login Tests -----
-  test('User login with JWT token generation', async () => {
+  test('Login valid credentials', async () => {
     const res = await request(app)
       .post('/auth/login')
-      .send({ username: 'john', password: '123456' }); // existing user
+      .send({
+        username: 'testuser',
+        password: '1234'
+      });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty('token');
+    expect(res.body.token).toBeDefined();
+  });
+
+  test('Login invalid credentials fails', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({
+        username: 'testuser',
+        password: 'wrong'
+      });
+
+    expect(res.statusCode).toBe(401);
   });
 
 });

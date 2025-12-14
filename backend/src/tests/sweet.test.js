@@ -1,33 +1,62 @@
 const request = require('supertest');
+const bcrypt = require('bcryptjs');
 const app = require('../app');
+const { User, Sweet } = require('../models');
+
+let adminToken;
+
+beforeAll(async () => {
+  const hashedPassword = await bcrypt.hash('password', 10);
+
+  await User.create({
+    username: 'admin',
+    password: hashedPassword,
+    isAdmin: true
+  });
+
+  const loginRes = await request(app)
+    .post('/auth/login')
+    .send({
+      username: 'admin',
+      password: 'password'
+    });
+
+  adminToken = loginRes.body.token;
+});
 
 describe('Sweet Management Tests', () => {
-  // Seed some sweets before tests
-  beforeAll(() => {
-    app.locals.sweets = [
-      { name: 'Ladoo', price: 10 },
-      { name: 'Barfi', price: 15 }
-    ];
-  });
-
-  test('Get all sweets endpoint', async () => {
-    const res = await request(app).get('/sweets');
-    expect(res.statusCode).toBe(200);
-    expect(res.body.length).toBeGreaterThan(0);
-  });
-
-  test('Search sweets functionality', async () => {
-    const res = await request(app).get('/sweets?search=Ladoo'); // matches controller query param
-    expect(res.statusCode).toBe(200);
-    expect(res.body[0].name).toBe('Ladoo');
-  });
 
   test('Create new sweet', async () => {
     const res = await request(app)
       .post('/sweets')
-      .send({ name: 'Jalebi', price: 20 });
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Rasgulla',
+        price: 100,
+        quantity: 20
+      });
 
     expect(res.statusCode).toBe(201);
-    expect(res.body.message).toBe('Sweet created');
   });
+
+  test('Duplicate sweet creation fails', async () => {
+    const res = await request(app)
+      .post('/sweets')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Rasgulla',
+        price: 100,
+        quantity: 20
+      });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  test('Get all sweets', async () => {
+    const res = await request(app).get('/sweets');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+
 });

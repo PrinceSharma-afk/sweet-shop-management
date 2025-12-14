@@ -1,22 +1,38 @@
 const express = require('express');
-const { register, login } = require('./controllers/auth.controller');
-const { getAllSweets, searchSweets, createSweet } = require('./controllers/sweet.controller');
-const { purchaseSweet, restockSweet } = require('./controllers/inventory.controller');
+const sequelize = require('./config/db');
+const dotenv = require('dotenv');
+dotenv.config();
+
+// Routes
+const authRoutes = require('./routes/auth.routes');
+const sweetRoutes = require('./routes/sweet.routes');
+const inventoryRoutes = require('./routes/inventory.routes');
 
 const app = express();
+
+// -------------------- MIDDLEWARE --------------------
 app.use(express.json());
 
-// Auth routes
-app.post('/auth/register', register);
-app.post('/auth/login', login);
+// -------------------- ROUTES --------------------
+app.use('/auth', authRoutes);
+app.use('/sweets', sweetRoutes);
+app.use('/inventory', inventoryRoutes);
 
-// Sweet routes
-app.get('/sweets', getAllSweets);
-app.get('/sweets/search', searchSweets); // separate route for search
-app.post('/sweets', createSweet);
+// -------------------- TEST DB CONNECTION --------------------
+if (process.env.NODE_ENV !== 'test') {
+  sequelize.authenticate()
+    .then(() => console.log('PostgreSQL connected'))
+    .catch(err => console.error('DB connection error:', err));
 
-// Inventory routes
-app.post('/inventory/purchase', purchaseSweet);
-app.post('/inventory/restock', restockSweet);
+  // -------------------- SYNC DATABASE --------------------
+  sequelize.sync({ alter: true })
+    .then(() => console.log('DB synced'))
+    .catch(err => console.error('DB sync error:', err));
+}
+
+// -------------------- HEALTH CHECK --------------------
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Sweet Shop API running' });
+});
 
 module.exports = app;
