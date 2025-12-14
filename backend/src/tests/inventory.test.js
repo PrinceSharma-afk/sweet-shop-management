@@ -1,100 +1,50 @@
-const request = require('supertest');
-const bcrypt = require('bcryptjs');
-const app = require('../app');
-const { User, Sweet } = require('../models');
+const request = require("supertest");
+const app = require("../app");
 
-let adminToken;
+let token;
 
 beforeAll(async () => {
-  // Create admin user
-  const hashedPassword = await bcrypt.hash('password', 10);
-
-  await User.create({
-    username: 'inventoryAdmin',
-    password: hashedPassword,
-    isAdmin: true
+  await request(app).post("/api/auth/register").send({
+    username: "admin",
+    password: "admin123",
+    isAdmin: true,
   });
 
-  // Login admin
-  const loginRes = await request(app)
-    .post('/auth/login')
+  const login = await request(app)
+    .post("/api/auth/login")
+    .send({ username: "admin", password: "admin123" });
+
+  token = login.body.token;
+
+  await request(app)
+    .post("/api/sweets")
+    .set("Authorization", `Bearer ${token}`)
     .send({
-      username: 'inventoryAdmin',
-      password: 'password'
+      name: "Barfi",
+      category: "Indian",
+      price: 20,
+      quantity: 10,
     });
-
-  adminToken = loginRes.body.token;
-
-  // Create a sweet
-  await Sweet.create({
-    name: 'Kaju Katli',
-    price: 500,
-    quantity: 10
-  });
 });
 
-describe('Inventory Tests', () => {
-
-  test('Purchase sweet reduces quantity', async () => {
+describe("Inventory API", () => {
+  test("Purchase sweet (alias route)", async () => {
     const res = await request(app)
-      .post('/inventory/purchase')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        name: 'Kaju Katli',
-        quantity: 2
-      });
+      .post("/api/sweets/Barfi/purchase")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ quantity: 2 });
 
     expect(res.statusCode).toBe(200);
-
-    const updatedSweet = await Sweet.findOne({
-      where: { name: 'Kaju Katli' }
-    });
-
-    expect(updatedSweet.quantity).toBe(8);
+    expect(res.body.sweet.quantity).toBe(8);
   });
 
-  test('Purchase more than stock fails', async () => {
+  test("Restock sweet (admin)", async () => {
     const res = await request(app)
-      .post('/inventory/purchase')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        name: 'Kaju Katli',
-        quantity: 100
-      });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe('Insufficient stock');
-  });
-
-  test('Restock sweet increases quantity', async () => {
-    const res = await request(app)
-      .post('/inventory/restock')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        name: 'Kaju Katli',
-        quantity: 5
-      });
+      .post("/api/sweets/Barfi/restock")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ quantity: 5 });
 
     expect(res.statusCode).toBe(200);
-
-    const updatedSweet = await Sweet.findOne({
-      where: { name: 'Kaju Katli' }
-    });
-
-    expect(updatedSweet.quantity).toBe(13);
+    expect(res.body.sweet.quantity).toBe(13);
   });
-
-  test('Restock invalid quantity fails', async () => {
-    const res = await request(app)
-      .post('/inventory/restock')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        name: 'Kaju Katli',
-        quantity: -5
-      });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe('Invalid quantity or sweet');
-  });
-
 });

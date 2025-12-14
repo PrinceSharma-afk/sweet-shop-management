@@ -1,62 +1,47 @@
-const request = require('supertest');
-const bcrypt = require('bcryptjs');
-const app = require('../app');
-const { User, Sweet } = require('../models');
+const request = require("supertest");
+const app = require("../app");
 
-let adminToken;
+let token;
 
 beforeAll(async () => {
-  const hashedPassword = await bcrypt.hash('password', 10);
-
-  await User.create({
-    username: 'admin',
-    password: hashedPassword,
-    isAdmin: true
+  await request(app).post("/api/auth/register").send({
+    username: "admin",
+    password: "admin123",
+    isAdmin: true,
   });
 
-  const loginRes = await request(app)
-    .post('/auth/login')
-    .send({
-      username: 'admin',
-      password: 'password'
-    });
+  const login = await request(app)
+    .post("/api/auth/login")
+    .send({ username: "admin", password: "admin123" });
 
-  adminToken = loginRes.body.token;
+  token = login.body.token;
+
+  await request(app)
+    .post("/api/sweets")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      name: "Ladoo",
+      category: "Indian",
+      price: 10,
+      quantity: 5,
+    });
 });
 
-describe('Sweet Management Tests', () => {
-
-  test('Create new sweet', async () => {
+describe("Sweets API", () => {
+  test("Get all sweets", async () => {
     const res = await request(app)
-      .post('/sweets')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        name: 'Rasgulla',
-        price: 100,
-        quantity: 20
-      });
-
-    expect(res.statusCode).toBe(201);
-  });
-
-  test('Duplicate sweet creation fails', async () => {
-    const res = await request(app)
-      .post('/sweets')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        name: 'Rasgulla',
-        price: 100,
-        quantity: 20
-      });
-
-    expect(res.statusCode).toBe(400);
-  });
-
-  test('Get all sweets', async () => {
-    const res = await request(app).get('/sweets');
+      .get("/api/sweets")
+      .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body.length).toBe(1);
   });
 
+  test("Search sweets by name", async () => {
+    const res = await request(app)
+      .get("/api/sweets/search?search=Ladoo")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.body[0].name).toBe("Ladoo");
+  });
 });

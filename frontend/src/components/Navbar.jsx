@@ -12,31 +12,34 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{ marginBottom: "20px" }}>
-      {!isAuthenticated && (
-        <>
-          <Link to="/">Login</Link> |{" "}
-          <Link to="/register">Register</Link>
-        </>
-      )}
+    <nav>
+      {/* LEFT SIDE */}
+      <div className="nav-left">
+        {isAuthenticated && <Link to="/dashboard">Dashboard</Link>}
 
-      {isAuthenticated && (
-        <>
-          <Link to="/dashboard">Dashboard</Link>
+        {isAuthenticated && isAdmin && (
+          <>
+            <Link to="/admin">Admin</Link>
+            <Link to="/inventory">Inventory</Link>
+          </>
+        )}
+      </div>
 
-          {isAdmin && (
-            <>
-              {" | "}
-              <Link to="/admin">Admin</Link>
-              {" | "}
-              <Link to="/inventory">Inventory</Link>
-            </>
-          )}
+      {/* RIGHT SIDE */}
+      <div className="nav-right">
+        {!isAuthenticated && (
+          <>
+            <Link to="/">Login</Link>
+            <Link to="/register">Register</Link>
+          </>
+        )}
 
-          {" | "}
-          <button onClick={handleLogout}>Logout</button>
-        </>
-      )}
+        {isAuthenticated && (
+          <button className="logout" onClick={handleLogout}>
+            Logout
+          </button>
+        )}
+      </div>
     </nav>
   );
 }

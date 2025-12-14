@@ -23,36 +23,33 @@ export default function Register() {
   };
 
   return (
-    <div className="auth-wrapper">
-    <div className="container">
+  <div className="auth-wrapper">
+    <div className="auth-container">
       <h2>Register</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username</label><br />
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
+        <label>Username</label>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
 
-        <div>
-          <label>Password</label><br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        <label>Password</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
         <button type="submit">Register</button>
       </form>
     </div>
-    </div>
-  );
+  </div>
+);
+
 }

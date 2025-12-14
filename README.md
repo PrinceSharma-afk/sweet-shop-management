@@ -1,4 +1,3 @@
-```markdown
 # Sweet Shop Management System
 
 **TDD Kata – Full Stack Application**
@@ -27,7 +26,6 @@ This project was developed as part of a **Test-Driven Development (TDD) Kata**, 
 * Add, update, and delete sweets (Admin only)
 * View all available sweets
 * Each sweet contains:
-
   * Unique ID
   * Name
   * Category
@@ -47,11 +45,75 @@ This project was developed as part of a **Test-Driven Development (TDD) Kata**, 
 * Filter sweets by price range
 * Combine multiple filters
 
+### Admin Access Design
+
+Admin access is not selectable or configurable from the frontend UI by design.
+
+#### How Admin Users Are Created
+
+* Admin privileges are assigned only during registration
+* This is done by setting the `isAdmin` flag when a user is created (typically via backend setup or controlled registration)
+* Example: Admin users are created by passing `isAdmin: true` during registration in a secure or controlled context
+
+#### Why Admin Cannot Be Selected in the UI
+
+* Allowing users to self-select admin access from the frontend would be a security risk
+* Admin capabilities (adding, updating, deleting sweets, restocking inventory) are protected by:
+  * JWT authentication
+  * Backend role verification middleware
+
+This design ensures:
+
+* Regular users cannot escalate privileges
+* Admin actions are fully protected at the API level
+* Role-based access control is enforced server-side
+
 ### Testing
 
 * Backend tests using Jest
 * Core business logic developed following a TDD approach
 * Tests covering sweets and inventory operations
+
+This project follows a test-driven and test-validated approach for backend functionality.
+Automated tests are written using Jest and Supertest, and they run against a SQLite in-memory database when the environment is set to test.
+
+#### Test Environment
+
+* When `NODE_ENV=test`, the application uses SQLite (in-memory)
+* For development and production, the application uses PostgreSQL
+* This ensures tests are isolated, fast, and do not affect real data
+
+#### Test Files Included
+
+The following backend test files are included in the final submission:
+
+**auth.test.js**
+
+* Verifies user registration
+* Verifies login and JWT token generation
+
+**sweet.test.js**
+
+* Verifies creation of sweets (admin only)
+* Verifies fetching all available sweets
+* Verifies searching sweets by name
+
+**inventory.test.js**
+
+* Verifies purchasing a sweet (quantity decreases)
+* Verifies restocking a sweet (quantity increases)
+
+#### Test Results
+
+* All backend tests pass successfully
+* Tests validate authentication, authorization, inventory logic, and data persistence
+* Test execution uses an isolated SQLite database to ensure reliability and repeatability
+
+---
+
+### Note
+
+Some route and data model choices were intentionally kept simple once the core functionality was stable; in particular, sweets are identified by name instead of numeric IDs to avoid unnecessary refactoring while preserving correctness and testability.
 
 ---
 
@@ -77,7 +139,6 @@ This project was developed as part of a **Test-Driven Development (TDD) Kata**, 
 ---
 
 ## Project Structure
-
 ```
 sweet-shop-management/
 │
@@ -105,14 +166,12 @@ sweet-shop-management/
 ## Setup Instructions
 
 ### Backend Setup
-
 ```bash
 cd backend
 npm install
 ```
 
 Create a `.env` file:
-
 ```env
 PORT=5000
 DATABASE_URL=postgresql://username:password@localhost:5432/sweetshop
@@ -120,7 +179,6 @@ JWT_SECRET=your_secret_key
 ```
 
 Run the backend server:
-
 ```bash
 node server.js
 ```
@@ -128,7 +186,6 @@ node server.js
 ---
 
 ### Frontend Setup
-
 ```bash
 cd frontend
 npm install
@@ -143,14 +200,12 @@ npm run dev
 ## API Endpoints
 
 ### Authentication
-
 ```
 POST /api/auth/register
 POST /api/auth/login
 ```
 
 ### Sweets (Protected)
-
 ```
 GET    /api/sweets
 GET    /api/sweets/search
@@ -160,7 +215,6 @@ DELETE /api/sweets/:name     (Admin only)
 ```
 
 ### Inventory
-
 ```
 POST /api/sweets/:name/purchase
 POST /api/sweets/:name/restock   (Admin only)
@@ -171,7 +225,6 @@ Note: Inventory functionality is also exposed under `/api/inventory` as alias ro
 ---
 
 ## Running Tests
-
 ```bash
 cd backend
 npm test
@@ -250,3 +303,14 @@ This approach is intended to provide clear and honest disclosure of AI involveme
 * Tests passing
 * AI usage transparently documented
 
+---
+
+## Author
+
+**Prince Sharma**
+
+**Co-authored-by: ChatGPT <AI@users.noreply.github.com>**
+
+This project was developed as part of a coding kata to demonstrate full-stack development skills, test-driven development practices, and the ability to build secure, role-based web applications.
+
+---

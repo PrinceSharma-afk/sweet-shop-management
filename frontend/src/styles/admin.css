@@ -1,34 +1,82 @@
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 40px auto;
   background: #ffffff;
   padding: 20px;
   border-radius: 6px;
 }
 
+/* =========================
+   Cards
+========================= */
+
 .card {
   background: #ffffff;
   border-radius: 6px;
   padding: 16px;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
+
+.card-add {
+  border-left: 4px solid #1976d2;
+  background: #f9fbff;
+}
+
+.card-manage {
+  border-left: 4px solid #e0e0e0;
+}
+
+.card-manage:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================
+   Layout Grids
+========================= */
+
+/* Add Sweet form grid */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Manage sweets grid */
+.manage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* =========================
+   Card Content
+========================= */
 
 .card-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .card-info {
   margin-bottom: 10px;
 }
 
+.admin-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* =========================
+   Inputs & Buttons
+========================= */
+
 input {
   width: 100%;
   padding: 8px;
-  margin: 6px 0 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -37,7 +85,7 @@ button {
   background: #1976d2;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -53,26 +101,35 @@ button:hover {
 .btn-danger:hover {
   background: #c62828;
 }
+
 /* =========================
-   Card Variants
+   Text & Sections
 ========================= */
 
-/* Add Sweet block */
-.card-add {
-  border-left: 4px solid #1976d2;
-  background: #f9fbff;
+.section-title {
+  margin-bottom: 16px;
+  color: #1976d2;
 }
 
-/* Manage Sweet items */
-.card-manage {
-  border-left: 4px solid #e0e0e0;
+.meta {
+  font-size: 14px;
+  color: #555;
 }
 
-/* Optional hover polish */
-.card-manage:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+.section-divider {
+  margin: 30px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
 }
-/* Slight spacing polish for inventory */
-.admin-actions {
-  align-items: center;
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+  .admin-grid,
+  .manage-grid,
+  .admin-actions {
+    grid-template-columns: 1fr;
+  }
 }

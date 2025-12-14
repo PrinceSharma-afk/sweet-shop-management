@@ -7,6 +7,7 @@ import {
 } from "../api/sweets";
 import { restockSweet } from "../api/inventory";
 import "../styles/admin.css";
+
 export default function Admin() {
   const [sweets, setSweets] = useState([]);
   const [name, setName] = useState("");
@@ -28,9 +29,6 @@ export default function Admin() {
     fetchSweets();
   }, []);
 
-  /* =========================
-     ADD SWEET
-  ========================= */
   const handleAddSweet = async (e) => {
     e.preventDefault();
     setError("");
@@ -53,9 +51,6 @@ export default function Admin() {
     }
   };
 
-  /* =========================
-     DELETE
-  ========================= */
   const handleDelete = async (name) => {
     try {
       await deleteSweet(name);
@@ -65,110 +60,110 @@ export default function Admin() {
     }
   };
 
-  /* =========================
-     UPDATE
-  ========================= */
-  const handleUpdate = async (name, data) => {
-    try {
-      await updateSweet(name, data);
-      fetchSweets();
-    } catch {
-      setError("Update failed");
-    }
+  const handleUpdatePrice = async (name, price) => {
+    await updateSweet(name, { price: Number(price) });
+    fetchSweets();
   };
 
-  /* =========================
-     RESTOCK
-  ========================= */
   const handleRestock = async (name, qty) => {
-    try {
-      await restockSweet({ name, quantity: Number(qty) });
-      fetchSweets();
-    } catch {
-      setError("Restock failed");
-    }
+    await restockSweet({ name, quantity: Number(qty) });
+    fetchSweets();
   };
-return (
-  <div className="container">
-    <h2>Admin Dashboard</h2>
 
-    {/* Add Sweet */}
-    <div className="card card-add">
-      <h3>Add Sweet</h3>
+  return (
+    <div className="container">
+      <h2>Admin Dashboard</h2>
+      {error && <p className="error">{error}</p>}
 
-      <form onSubmit={handleAddSweet} className="admin-form">
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+      {/* =========================
+          Add Sweet (2x2)
+      ========================= */}
+      <div className="card card-add">
+        <h3 className="section-title">Add Sweet</h3>
 
-        <input
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
+        <form onSubmit={handleAddSweet}>
+          <div className="admin-grid">
+            <input
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
 
-        <input
-          type="number"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
+            <input
+              placeholder="Category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            />
 
-        <input
-          type="number"
-          placeholder="Quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-        />
+            <input
+              type="number"
+              placeholder="Price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
 
-        <button className="btn-primary">Add Sweet</button>
-      </form>
-    </div>
+            <input
+              type="number"
+              placeholder="Quantity"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              required
+            />
+          </div>
 
-    {/* Existing Sweets */}
-    <h3 className="section-title">Manage Sweets</h3>
+          <button className="btn-primary">Add Sweet</button>
+        </form>
+      </div>
 
-    <div className="sweet-list">
-      {sweets.map((sweet) => (
-        <div className="card card-manage" key={sweet.id}>
-          <div className="card-row">
-            <div className="card-info">
-              <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
-              <div className="meta">Stock: {sweet.quantity}</div>
+      <hr className="section-divider" />
+
+      {/* =========================
+          Manage Sweets (2x2)
+      ========================= */}
+      <h3 className="section-title">Manage Sweets</h3>
+
+      <div className="manage-grid">
+        {sweets.map((sweet) => (
+          <div className="card card-manage" key={sweet.id}>
+            <div className="card-row">
+              <div className="card-info">
+                <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
+                <div className="meta">Stock: {sweet.quantity}</div>
+              </div>
+
+              <button
+                className="btn-danger"
+                onClick={() => handleDelete(sweet.name)}
+              >
+                Delete
+              </button>
             </div>
 
-            <button
-              className="btn-danger"
-              onClick={() => handleDelete(sweet.name)}
-            >
-              Delete
-            </button>
-          </div>
+            <div className="admin-actions">
+              <input
+                type="number"
+                placeholder="New Price"
+                onBlur={(e) =>
+                  e.target.value &&
+                  handleUpdatePrice(sweet.name, e.target.value)
+                }
+              />
 
-          <div className="admin-actions">
-            <input
-              type="number"
-              placeholder="New Price"
-              onBlur={(e) =>
-                e.target.value &&
-                handleUpdatePrice(sweet.name, e.target.value)
-              }
-            />
-
-            <input
-              type="number"
-              placeholder="Restock Qty"
-              onBlur={(e) =>
-                e.target.value &&
-                handleRestock(sweet.name, e.target.value)
-              }
-            />
+              <input
+                type="number"
+                placeholder="Restock Qty"
+                onBlur={(e) =>
+                  e.target.value &&
+                  handleRestock(sweet.name, e.target.value)
+                }
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
 }

@@ -1,4 +1,7 @@
-/* Search section */
+/* =========================
+   Search Section
+========================= */
+
 .search-card {
   background: #ffffff;
   padding: 20px;
@@ -7,31 +10,53 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.search-card input {
-  width: 100%;
-  margin-bottom: 10px;
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
-.search-card button {
-  margin-top: 10px;
+.search-grid label {
+  font-weight: bold;
 }
 
-/* Sweet list */
-.sweet-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.search-actions {
+  margin-top: 16px;
 }
 
-/* Individual sweet card */
+/* =========================
+   Dashboard Sections
+========================= */
+
+.section-divider {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+.section-title {
+  margin-bottom: 16px;
+  color: #1976d2;
+}
+
+/* =========================
+   Sweets Grid (2x2)
+========================= */
+
+.sweet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
 .sweet-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   background: #ffffff;
   padding: 16px;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .sweet-info {
@@ -44,7 +69,42 @@
   margin-top: 4px;
 }
 
-/* Action area */
 .sweet-action button {
   min-width: 90px;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.btn-primary {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #125aa3;
+}
+
+.btn-primary:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+  .search-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sweet-grid {
+    grid-template-columns: 1fr;
+  }
 }
