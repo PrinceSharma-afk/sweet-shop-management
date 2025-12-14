@@ -49,70 +49,40 @@ export default function Dashboard() {
 
   if (loading) return <p>Loading sweets...</p>;
 
-  return (
-    <div className="auth-wrapper">
-      <div className="container">
-        <h2>User Dashboard</h2>
+  return (<div className="container">
+  <h2>User Dashboard</h2>
 
-        {/* SEARCH */}
-        <div style={{ marginBottom: "20px" }}>
-          <input
-            placeholder="Search name"
-            value={filters.name}
-            onChange={(e) =>
-              setFilters({ ...filters, name: e.target.value })
-            }
-          />
+  {/* Search Section */}
+  <div className="search-card">
+    <input placeholder="Search name" />
+    <input placeholder="Category" />
+    <input placeholder="Min price" />
+    <input placeholder="Max price" />
+    <button className="btn-primary">Search</button>
+  </div>
 
-          <input
-            placeholder="Category"
-            value={filters.category}
-            onChange={(e) =>
-              setFilters({ ...filters, category: e.target.value })
-            }
-          />
-
-          <input
-            type="number"
-            placeholder="Min price"
-            value={filters.minPrice}
-            onChange={(e) =>
-              setFilters({ ...filters, minPrice: e.target.value })
-            }
-          />
-
-          <input
-            type="number"
-            placeholder="Max price"
-            value={filters.maxPrice}
-            onChange={(e) =>
-              setFilters({ ...filters, maxPrice: e.target.value })
-            }
-          />
-
-          <button onClick={handleSearch}>Search</button>
+  {/* Results */}
+  <div className="sweet-list">
+    {sweets.map((sweet) => (
+      <div className="sweet-card" key={sweet.id}>
+        <div className="sweet-info">
+          <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
+          <div className="meta">Stock: {sweet.quantity}</div>
         </div>
 
-        {error && <p className="error">{error}</p>}
-
-        <ul>
-          {sweets.map((sweet) => (
-            <li key={sweet.id}>
-              <strong>{sweet.name}</strong> ({sweet.category}) — ₹
-              {sweet.price}
-              <br />
-              Stock: {sweet.quantity}
-              <br />
-              <button
-                onClick={() => handlePurchase(sweet.name)}
-                disabled={sweet.quantity === 0}
-              >
-                Buy 1
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="sweet-action">
+          <button
+            className="btn-primary"
+            disabled={sweet.quantity === 0}
+            onClick={() => handlePurchase(sweet.name)}
+          >
+            Buy 1
+          </button>
+        </div>
       </div>
-    </div>
+    ))}
+  </div>
+</div>
+
   );
 }

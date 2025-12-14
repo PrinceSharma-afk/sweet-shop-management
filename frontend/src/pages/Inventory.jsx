@@ -53,45 +53,47 @@ export default function Inventory() {
     );
   }
 
-  return (
-    <div className="auth-wrapper">
-      <div className="container">
-        <h2>Inventory Management</h2>
+  return  (
+  <div className="container">
+    <h2>Inventory Management</h2>
 
-        {error && <p className="error">{error}</p>}
+    {error && <p className="error">{error}</p>}
 
-        {sweets.length === 0 ? (
-          <p>No sweets found</p>
-        ) : (
-          <ul>
-            {sweets.map((sweet) => (
-              <li key={sweet.id} style={{ marginBottom: "15px" }}>
-                <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
-                <br />
-                Stock: {sweet.quantity}
+    <div className="sweet-list">
+      {sweets.map((sweet) => (
+        <div className="card card-manage" key={sweet.id}>
+          <div className="card-row">
+            <div className="card-info">
+              <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
+              <div className="meta">Stock: {sweet.quantity}</div>
+            </div>
+          </div>
 
-                <div style={{ marginTop: "8px" }}>
-                  <input
-                    type="number"
-                    placeholder="Restock qty"
-                    value={restockQty[sweet.name] || ""}
-                    onChange={(e) =>
-                      setRestockQty({
-                        ...restockQty,
-                        [sweet.name]: e.target.value,
-                      })
-                    }
-                  />
+          <div className="admin-actions">
+            <input
+              type="number"
+              placeholder="Restock qty"
+              value={restockQty[sweet.name] || ""}
+              onChange={(e) =>
+                setRestockQty({
+                  ...restockQty,
+                  [sweet.name]: e.target.value,
+                })
+              }
+            />
 
-                  <button onClick={() => handleRestock(sweet.name)}>
-                    Restock
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+            <button
+              className="btn-primary"
+              onClick={() => handleRestock(sweet.name)}
+            >
+              Restock
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
-  );
+  </div>
+);
+
+
 }

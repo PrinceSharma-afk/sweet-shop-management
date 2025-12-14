@@ -88,100 +88,87 @@ export default function Admin() {
       setError("Restock failed");
     }
   };
+return (
+  <div className="container">
+    <h2>Admin Dashboard</h2>
 
-  return (
-    <div className="auth-wrapper">
-      <div className="container">
-        <h2>Admin Dashboard</h2>
+    {/* Add Sweet */}
+    <div className="card card-add">
+      <h3>Add Sweet</h3>
 
-        {error && <p className="error">{error}</p>}
+      <form onSubmit={handleAddSweet} className="admin-form">
+        <input
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-        {/* ADD SWEET */}
-        <form onSubmit={handleAddSweet}>
-          <h3>Add Sweet</h3>
+        <input
+          placeholder="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
 
-          <input
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+        <input
+          type="number"
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
 
-          <input
-            placeholder="Category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-          />
+        <input
+          type="number"
+          placeholder="Quantity"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+        />
 
-          <input
-            type="number"
-            placeholder="Price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-          />
-
-          <input
-            type="number"
-            placeholder="Quantity"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            required
-          />
-
-          <button type="submit">Add Sweet</button>
-        </form>
-
-        <hr />
-
-        {/* SWEET LIST */}
-        <ul>
-          {sweets.map((sweet) => (
-            <li key={sweet.id} style={{ marginBottom: "15px" }}>
-              <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
-              <br />
-              Stock: {sweet.quantity}
-
-              <div style={{ marginTop: "8px" }}>
-                <input
-                  placeholder="New Category"
-                  onBlur={(e) =>
-                    e.target.value &&
-                    handleUpdate(sweet.name, {
-                      category: e.target.value,
-                    })
-                  }
-                />
-
-                <input
-                  type="number"
-                  placeholder="New Price"
-                  onBlur={(e) =>
-                    e.target.value &&
-                    handleUpdate(sweet.name, {
-                      price: Number(e.target.value),
-                    })
-                  }
-                />
-
-                <input
-                  type="number"
-                  placeholder="Restock Qty"
-                  onBlur={(e) =>
-                    e.target.value &&
-                    handleRestock(sweet.name, e.target.value)
-                  }
-                />
-
-                <button onClick={() => handleDelete(sweet.name)}>
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+        <button className="btn-primary">Add Sweet</button>
+      </form>
     </div>
-  );
+
+    {/* Existing Sweets */}
+    <h3 className="section-title">Manage Sweets</h3>
+
+    <div className="sweet-list">
+      {sweets.map((sweet) => (
+        <div className="card card-manage" key={sweet.id}>
+          <div className="card-row">
+            <div className="card-info">
+              <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
+              <div className="meta">Stock: {sweet.quantity}</div>
+            </div>
+
+            <button
+              className="btn-danger"
+              onClick={() => handleDelete(sweet.name)}
+            >
+              Delete
+            </button>
+          </div>
+
+          <div className="admin-actions">
+            <input
+              type="number"
+              placeholder="New Price"
+              onBlur={(e) =>
+                e.target.value &&
+                handleUpdatePrice(sweet.name, e.target.value)
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Restock Qty"
+              onBlur={(e) =>
+                e.target.value &&
+                handleRestock(sweet.name, e.target.value)
+              }
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 }

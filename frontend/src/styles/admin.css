@@ -53,3 +53,26 @@ button:hover {
 .btn-danger:hover {
   background: #c62828;
 }
+/* =========================
+   Card Variants
+========================= */
+
+/* Add Sweet block */
+.card-add {
+  border-left: 4px solid #1976d2;
+  background: #f9fbff;
+}
+
+/* Manage Sweet items */
+.card-manage {
+  border-left: 4px solid #e0e0e0;
+}
+
+/* Optional hover polish */
+.card-manage:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+/* Slight spacing polish for inventory */
+.admin-actions {
+  align-items: center;
+}
