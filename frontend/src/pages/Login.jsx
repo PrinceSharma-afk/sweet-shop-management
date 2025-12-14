@@ -17,7 +17,7 @@ export default function Login() {
   try {
     await login({ username, password });
 
-    // ✅ ALWAYS read from localStorage (string-safe)
+   
     const adminFlag = localStorage.getItem("isAdmin");
 
     if (adminFlag === "true") {
@@ -33,10 +33,11 @@ export default function Login() {
 
 
   return (
-    <div>
+  <div className="auth-wrapper">
+    <div className="container">
       <h2>Login</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
       <form onSubmit={handleSubmit}>
         <div>
@@ -61,5 +62,6 @@ export default function Login() {
         <button type="submit">Login</button>
       </form>
     </div>
-  );
+  </div>
+);
 }

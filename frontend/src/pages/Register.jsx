@@ -22,7 +22,7 @@ export default function Register() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Register</h2>
 
       {error && <p style={{ color: "red" }}>{error}</p>}

@@ -36,7 +36,7 @@ export default function Dashboard() {
   if (loading) return <p>Loading sweets...</p>;
 
   return (
-    <div>
+    <div className="container">
       <h2>User Dashboard</h2>
 
       {error && <p style={{ color: "red" }}>{error}</p>}

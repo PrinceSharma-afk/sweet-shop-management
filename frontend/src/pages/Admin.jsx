@@ -74,7 +74,7 @@ export default function Admin() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Admin Dashboard</h2>
 
       {error && <p style={{ color: "red" }}>{error}</p>}

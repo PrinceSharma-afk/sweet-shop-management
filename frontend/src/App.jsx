@@ -6,12 +6,15 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Inventory from "./pages/Inventory";
 
+import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 
 function App() {
   return (
     <BrowserRouter>
+      <Navbar />
+
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
