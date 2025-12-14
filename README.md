@@ -8,7 +8,7 @@
 
 The **Sweet Shop Management System** is a full-stack web application designed to manage sweets inventory, purchases, and administration. The system supports **role-based access control**, secure authentication, inventory tracking, and search/filter functionality.
 
-This project was developed as part of a **Test-Driven Development (TDD) Kata**, with emphasis on clean architecture, maintainability, and real-world backend–frontend integration. All local commits are included in file:Local_Commits and a screenshot of log is added in screenshot section.
+This project was developed as part of a **Test-Driven Development (TDD) Kata**, with emphasis on clean architecture, maintainability, and real-world backend–frontend integration. All local commits are included in file: ALL_COMMITS_DETAILED.txt and a screenshot of log is added in screenshot section.
 
 ---
 
