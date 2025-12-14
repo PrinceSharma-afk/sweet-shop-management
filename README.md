@@ -10,7 +10,7 @@ The **Sweet Shop Management System** is a full-stack web application designed to
 The system supports **role-based access control**, secure authentication, inventory tracking, and search/filter functionality.
 
 This project was developed as part of a **Test-Driven Development (TDD) Kata**, with emphasis on clean architecture, maintainability, and real-world backend–frontend integration.
-
+All local commits are included in file:Local_Commits and a screenshot of log is added in screenshot section.
 ---
 
 ## Features
@@ -282,6 +282,14 @@ Test results are displayed in the console using Jest.
 **Description:** The search and filter feature helps users quickly find items based on keywords, categories, price range, or availability.
 
 ![Search and Filter Interface](screenshots/search-filter.png)
+
+---
+
+## 5. Local Commit Log
+
+**Description:** Git commit logs generated directly from the local repository using Git.
+
+![Local Commit Log](screenshots/commit.png)
 
 ---
 
