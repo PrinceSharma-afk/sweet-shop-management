@@ -173,7 +173,16 @@ npm install
 
 Create a `.env` file:
 ```env
-PORT=5000
+DB_NAME=sweetshop(or any name)
+DB_USER=postgres(default)
+DB_PORT=5432(default)
+DB_PASSWORD=strong_password
+DB_HOST=localhost(default)
+JWT_SECRET=strong_secret_key
+PORT=5000(default)
+```
+Can be shortened after making changes in dj.js to
+```env
 DATABASE_URL=postgresql://username:password@localhost:5432/sweetshop
 JWT_SECRET=your_secret_key
 ```
