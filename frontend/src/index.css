@@ -203,3 +203,67 @@ li {
   text-align: center;
   margin-bottom: 10px;
 }
+/* =========================
+   DASHBOARD / ADMIN POLISH
+========================= */
+
+/* Section headings */
+.section-title {
+  margin-bottom: 16px;
+  color: #1976d2;
+}
+
+/* Card style for list items */
+.card {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Flex layout inside cards */
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.card-info {
+  margin-bottom: 10px;
+}
+
+/* Buttons */
+.btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: #1976d2;
+  color: white;
+}
+
+.btn-danger {
+  background: #e53935;
+  color: white;
+}
+
+.btn-secondary {
+  background: #757575;
+  color: white;
+}
+
+.btn + .btn {
+  margin-left: 8px;
+}
+
+/* Quantity / price text */
+.meta {
+  font-size: 14px;
+  color: #555;
+}

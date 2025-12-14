@@ -74,50 +74,55 @@ export default function Admin() {
   };
 
   return (
-    <div className="auth-wrapper">
     <div className="container">
-      <h2>Admin Dashboard</h2>
+      <h2 className="section-title">Admin Dashboard</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
       {/* Add Sweet */}
-      <form onSubmit={handleAddSweet}>
+      <div className="card">
         <h3>Add Sweet</h3>
 
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        <form onSubmit={handleAddSweet}>
+          <input
+            placeholder="Sweet Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
 
-        <input
-          type="number"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          required
-        />
+          <input
+            type="number"
+            placeholder="Price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+          />
 
-        <input
-          type="number"
-          placeholder="Quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          required
-        />
+          <input
+            type="number"
+            placeholder="Initial Quantity"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            required
+          />
 
-        <button type="submit">Add</button>
-      </form>
-
-      <hr />
+          <button className="btn btn-primary" type="submit">
+            Add Sweet
+          </button>
+        </form>
+      </div>
 
       {/* Sweet List */}
-      <ul>
-        {sweets.map((sweet) => (
-          <li key={sweet.id} style={{ marginBottom: "15px" }}>
-            <strong>{sweet.name}</strong> — ₹{sweet.price}  
-            (Qty: {sweet.quantity})
+      {sweets.map((sweet) => (
+        <div key={sweet.id} className="card">
+          <div className="card-row">
+            <div className="card-info">
+              <strong>{sweet.name}</strong>
+              <div className="meta">
+                ₹{sweet.price} • Qty: {sweet.quantity}
+              </div>
+            </div>
 
             <div>
               <input
@@ -138,14 +143,16 @@ export default function Admin() {
                 }
               />
 
-              <button onClick={() => handleDelete(sweet.name)}>
+              <button
+                className="btn btn-danger"
+                onClick={() => handleDelete(sweet.name)}
+              >
                 Delete
               </button>
             </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

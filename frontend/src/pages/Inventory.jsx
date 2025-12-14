@@ -12,7 +12,7 @@ export default function Inventory() {
     try {
       const res = await getAllSweets();
       setSweets(res.data);
-    } catch (err) {
+    } catch {
       setError("Failed to load inventory");
     } finally {
       setLoading(false);
@@ -50,26 +50,28 @@ export default function Inventory() {
   }
 
   return (
-    <div className="auth-wrapper">
     <div className="container">
-      <h2>Inventory Management</h2>
+      <h2 className="section-title">Inventory Management</h2>
 
       {error && <p className="error">{error}</p>}
 
       {sweets.length === 0 ? (
         <p>No sweets found</p>
       ) : (
-        <ul>
-          {sweets.map((sweet) => (
-            <li key={sweet.id} style={{ marginBottom: "15px" }}>
-              <strong>{sweet.name}</strong> — ₹{sweet.price}  
-              <br />
-              Current Stock: {sweet.quantity}
+        sweets.map((sweet) => (
+          <div key={sweet.id} className="card">
+            <div className="card-row">
+              <div className="card-info">
+                <strong>{sweet.name}</strong>
+                <div className="meta">
+                  ₹{sweet.price} • Current Stock: {sweet.quantity}
+                </div>
+              </div>
 
-              <div style={{ marginTop: "8px" }}>
+              <div>
                 <input
                   type="number"
-                  placeholder="Restock quantity"
+                  placeholder="Restock Qty"
                   value={restockQty[sweet.name] || ""}
                   onChange={(e) =>
                     setRestockQty({
@@ -79,15 +81,17 @@ export default function Inventory() {
                   }
                 />
 
-                <button onClick={() => handleRestock(sweet.name)}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => handleRestock(sweet.name)}
+                >
                   Restock
                 </button>
               </div>
-            </li>
-          ))}
-        </ul>
+            </div>
+          </div>
+        ))
       )}
-    </div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ export default function Dashboard() {
     try {
       const res = await getAllSweets();
       setSweets(res.data);
-    } catch (err) {
+    } catch {
       setError("Failed to load sweets");
     } finally {
       setLoading(false);
@@ -27,43 +27,50 @@ export default function Dashboard() {
 
     try {
       await purchaseSweet({ name, quantity: 1 });
-      fetchSweets(); // refresh list after purchase
+      fetchSweets();
     } catch (err) {
       setError(err.response?.data?.error || "Purchase failed");
     }
   };
 
-  if (loading) return <p>Loading sweets...</p>;
+  if (loading) {
+    return (
+      <div className="container">
+        <p>Loading sweets...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="auth-wrapper">
     <div className="container">
-      <h2>User Dashboard</h2>
+      <h2 className="section-title">Available Sweets</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
       {sweets.length === 0 ? (
         <p>No sweets available</p>
       ) : (
-        <ul>
-          {sweets.map((sweet) => (
-            <li key={sweet.id} style={{ marginBottom: "10px" }}>
-              <strong>{sweet.name}</strong> — ₹{sweet.price}  
-              <br />
-              Available: {sweet.quantity}
-              <br />
+        sweets.map((sweet) => (
+          <div key={sweet.id} className="card">
+            <div className="card-row">
+              <div className="card-info">
+                <strong>{sweet.name}</strong>
+                <div className="meta">
+                  ₹{sweet.price} • Stock: {sweet.quantity}
+                </div>
+              </div>
+
               <button
-                onClick={() => handlePurchase(sweet.name)}
+                className="btn btn-primary"
                 disabled={sweet.quantity === 0}
+                onClick={() => handlePurchase(sweet.name)}
               >
                 Buy 1
               </button>
-            </li>
-          ))}
-        </ul>
+            </div>
+          </div>
+        ))
       )}
     </div>
-    </div>
-
   );
 }
