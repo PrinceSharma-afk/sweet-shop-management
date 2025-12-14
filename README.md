@@ -1,70 +1,252 @@
-# Getting Started with Create React App
+```markdown
+# Sweet Shop Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**TDD Kata – Full Stack Application**
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Project Overview
 
-### `npm start`
+The **Sweet Shop Management System** is a full-stack web application designed to manage sweets inventory, purchases, and administration.
+The system supports **role-based access control**, secure authentication, inventory tracking, and search/filter functionality.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This project was developed as part of a **Test-Driven Development (TDD) Kata**, with emphasis on clean architecture, maintainability, and real-world backend–frontend integration.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Features
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Authentication & Authorization
 
-### `npm run build`
+* User registration and login
+* JWT-based authentication
+* Role-based access control (Admin and User)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Sweets Management
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+* Add, update, and delete sweets (Admin only)
+* View all available sweets
+* Each sweet contains:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  * Unique ID
+  * Name
+  * Category
+  * Price
+  * Quantity in stock
 
-### `npm run eject`
+### Inventory Management
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* Purchase sweets (Users)
+* Restock sweets (Admins)
+* Validation to prevent negative inventory
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Search & Filter
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+* Search sweets by name (case-insensitive)
+* Filter sweets by category
+* Filter sweets by price range
+* Combine multiple filters
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Testing
 
-## Learn More
+* Backend tests using Jest
+* Core business logic developed following a TDD approach
+* Tests covering sweets and inventory operations
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Tech Stack
 
-### Code Splitting
+### Backend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+* Node.js
+* Express.js
+* PostgreSQL
+* Sequelize ORM
+* JSON Web Tokens (JWT)
+* Jest
 
-### Analyzing the Bundle Size
+### Frontend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+* React (Vite)
+* Axios
+* React Router
+* Context API
+* Custom CSS (no Tailwind)
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Project Structure
 
-### Advanced Configuration
+```
+sweet-shop-management/
+│
+├── backend/
+│   ├── controllers/
+│   ├── routes/
+│   ├── models/
+│   ├── middlewares/
+│   ├── tests/
+│   └── server.js
+│
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   └── index.css
+│
+└── README.md
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## Setup Instructions
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Backend Setup
 
-### `npm run build` fails to minify
+```bash
+cd backend
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Create a `.env` file:
+
+```env
+PORT=5000
+DATABASE_URL=postgresql://username:password@localhost:5432/sweetshop
+JWT_SECRET=your_secret_key
+```
+
+Run the backend server:
+
+```bash
+node server.js
+```
+
+---
+
+### Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+* Frontend URL: `http://localhost:5173`
+* Backend URL: `http://localhost:5000`
+
+---
+
+## API Endpoints
+
+### Authentication
+
+```
+POST /api/auth/register
+POST /api/auth/login
+```
+
+### Sweets (Protected)
+
+```
+GET    /api/sweets
+GET    /api/sweets/search
+POST   /api/sweets           (Admin only)
+PUT    /api/sweets/:name     (Admin only)
+DELETE /api/sweets/:name     (Admin only)
+```
+
+### Inventory
+
+```
+POST /api/sweets/:name/purchase
+POST /api/sweets/:name/restock   (Admin only)
+```
+
+Note: Inventory functionality is also exposed under `/api/inventory` as alias routes for backward compatibility.
+
+---
+
+## Running Tests
+
+```bash
+cd backend
+npm test
+```
+
+Test results are displayed in the console using Jest.
+
+---
+
+## Screenshots
+
+* Login and Registration
+* User Dashboard
+* Admin Dashboard
+* Inventory Management
+* Search and Filter Interface
+
+(Add screenshots here)
+
+---
+
+## My AI Usage
+
+AI tools were used extensively during the development of this project as **development assistance**, particularly because I am relatively new to React and modern full-stack workflows.
+
+### How AI was used
+
+* Understanding the problem statement and breaking it into smaller, manageable tasks
+* Getting guidance on folder structure and overall project organization
+* Generating initial boilerplate code for backend controllers and React components
+* Debugging issues related to database schema changes, authentication, and API integration
+* Refining validation logic and improving test cases
+* Clarifying concepts related to React state management, JWT authentication, and Sequelize ORM
+
+### My contribution
+
+* Designed and implemented the backend architecture
+* Wrote and integrated all business logic for authentication, sweets, and inventory
+* Manually connected frontend and backend APIs
+* Fixed bugs, edge cases, and validation errors
+* Refactored code for clarity, maintainability, and alignment with requirements
+* Made architectural decisions such as route aliasing, role-based middleware, and schema evolution
+* Ensured the project met all functional and non-functional kata requirements
+
+AI was used strictly as a **tool to support learning and productivity**.
+All final decisions, integrations, and implementations were done by me.
+
+---
+
+## AI Usage and Commit Transparency
+
+AI co-author trailers were **not added to individual Git commits** during development.
+
+Instead, AI usage is **fully and explicitly documented in this README**, particularly in the **"My AI Usage"** section. This section provides a transparent explanation of where and how AI tools were used, as well as which parts of the work were implemented and decided by me.
+
+This approach is intended to provide clear and honest disclosure of AI involvement, even though commit-level co-authorship was not applied.
+
+---
+
+## Key Learnings
+
+* Designing and structuring a full-stack application
+* Implementing secure JWT-based authentication
+* Handling role-based access control
+* Managing database schema evolution
+* Integrating a React frontend with a RESTful backend
+* Writing maintainable APIs and backend tests
+* Using AI responsibly as a development aid
+
+---
+
+## Final Status
+
+* All kata requirements implemented
+* Backend and frontend fully functional
+* Tests passing
+* AI usage transparently documented
+

@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { getAllSweets } from "../api/sweets";
 import { restockSweet } from "../api/inventory";
+import "../styles/inventory.css";
+import "../styles/admin.css";
+
+
+
 
 export default function Inventory() {
   const [sweets, setSweets] = useState([]);

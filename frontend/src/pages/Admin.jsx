@@ -6,7 +6,7 @@ import {
   updateSweet,
 } from "../api/sweets";
 import { restockSweet } from "../api/inventory";
-
+import "../styles/admin.css";
 export default function Admin() {
   const [sweets, setSweets] = useState([]);
   const [name, setName] = useState("");

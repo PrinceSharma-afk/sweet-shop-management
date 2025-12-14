@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAllSweets, searchSweets } from "../api/sweets";
 import { purchaseSweet } from "../api/inventory";
+import "../styles/dashboard.css";
 
 export default function Dashboard() {
   const [sweets, setSweets] = useState([]);

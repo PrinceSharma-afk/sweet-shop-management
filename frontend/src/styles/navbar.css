@@ -1,0 +1,30 @@
+/* =========================
+   Navbar
+========================= */
+nav {
+  background-color: #222;
+  padding: 12px 20px;
+}
+
+nav a {
+  color: #ffffff;
+  text-decoration: none;
+  margin-right: 15px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+nav button {
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+nav button:hover {
+  background: #e60000;
+}
