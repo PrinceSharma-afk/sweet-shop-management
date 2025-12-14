@@ -2,6 +2,7 @@ const express = require('express');
 const sequelize = require('./config/db');
 const dotenv = require('dotenv');
 dotenv.config();
+const cors = require("cors");
 
 // Routes
 const authRoutes = require('./routes/auth.routes');
@@ -12,6 +13,9 @@ const app = express();
 
 // -------------------- MIDDLEWARE --------------------
 app.use(express.json());
+app.use(cors({
+  origin: "http://localhost:5173",
+}));
 
 // -------------------- ROUTES --------------------
 app.use('/auth', authRoutes);
