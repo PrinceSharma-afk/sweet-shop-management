@@ -1,6 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
-import api from "./api/axios";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -8,21 +6,42 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Inventory from "./pages/Inventory";
 
-function App() {
-  useEffect(() => {
-    api.get("/test") 
-      .then((res) => console.log("Axios test response:", res.data))
-      .catch((err) => console.log("Axios test error:", err));
-  }, []);
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 
+function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/inventory" element={<Inventory />} />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/inventory"
+          element={
+            <AdminRoute>
+              <Inventory />
+            </AdminRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

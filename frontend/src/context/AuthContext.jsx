@@ -1,47 +1,62 @@
-import { createContext, useState, useEffect } from "react";
-import api from "../api/axios";
+import { createContext, useContext, useEffect, useState } from "react";
+import { loginUser } from "../api/auth";
 
-export const AuthContext = createContext();
+const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // Attach token to axios
+  // Load auth state on refresh
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    } else {
-      localStorage.removeItem("token");
-      delete api.defaults.headers.common["Authorization"];
-    }
-  }, [token]);
+    const savedToken = localStorage.getItem("token");
+    const savedIsAdmin = localStorage.getItem("isAdmin");
 
-  const login = async (email, password) => {
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      setToken(res.data.token);
-      setUser(res.data.user);
-      return { success: true };
-    } catch (err) {
-      console.log("Login error:", err.response?.data || err.message);
-      return { success: false, message: err.response?.data?.message || err.message };
+    if (savedToken) {
+      setToken(savedToken);
+      setIsAuthenticated(true);
+      setIsAdmin(savedIsAdmin === "true");
     }
+  }, []);
+
+  const login = async (credentials) => {
+    const res = await loginUser(credentials);
+
+    const { token, isAdmin } = res.data;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("isAdmin", isAdmin);
+
+    setToken(token);
+    setIsAuthenticated(true);
+    setIsAdmin(isAdmin);
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("isAdmin");
+
     setToken(null);
-    setUser(null);
+    setIsAuthenticated(false);
+    setIsAdmin(false);
   };
 
-  const value = {
-    user,
-    token,
-    login,
-    logout,
-    isAuthenticated: !!token,
-  };
+  return (
+    <AuthContext.Provider
+      value={{
+        token,
+        isAuthenticated,
+        isAdmin,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

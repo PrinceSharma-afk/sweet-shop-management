@@ -1,62 +1,55 @@
 import { useState } from "react";
-import api from "../api/axios";
+import { registerUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await api.post("/auth/register", { username, password, isAdmin });
-      setSuccess("Registration successful! You can now login.");
-      setError("");
-      setUsername("");
-      setPassword("");
-      setIsAdmin(false);
+    setError("");
 
-      setTimeout(() => navigate("/"), 1000);
+    try {
+      await registerUser({ username, password });
+      alert("Registration successful. Please login.");
+      navigate("/");
     } catch (err) {
-      console.log(err.response?.data); // check the response
       setError(err.response?.data?.error || "Registration failed");
-      setSuccess("");
     }
   };
 
   return (
     <div>
-      <h2>Register Page</h2>
+      <h2>Register</h2>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
       <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <label>
+        <div>
+          <label>Username</label><br />
           <input
-            type="checkbox"
-            checked={isAdmin}
-            onChange={(e) => setIsAdmin(e.target.checked)}
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
           />
-          Is Admin
-        </label>
+        </div>
+
+        <div>
+          <label>Password</label><br />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
         <button type="submit">Register</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
     </div>
   );
 }
