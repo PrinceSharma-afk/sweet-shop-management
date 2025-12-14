@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
-import { getAllSweets } from "../api/sweets";
+import { getAllSweets, searchSweets } from "../api/sweets";
 import { purchaseSweet } from "../api/inventory";
 
 export default function Dashboard() {
   const [sweets, setSweets] = useState([]);
+  const [filters, setFilters] = useState({
+    name: "",
+    category: "",
+    minPrice: "",
+    maxPrice: "",
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -22,9 +28,16 @@ export default function Dashboard() {
     fetchSweets();
   }, []);
 
-  const handlePurchase = async (name) => {
-    setError("");
+  const handleSearch = async () => {
+    try {
+      const res = await searchSweets(filters);
+      setSweets(res.data);
+    } catch {
+      setError("Search failed");
+    }
+  };
 
+  const handlePurchase = async (name) => {
     try {
       await purchaseSweet({ name, quantity: 1 });
       fetchSweets();
@@ -33,44 +46,72 @@ export default function Dashboard() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="container">
-        <p>Loading sweets...</p>
-      </div>
-    );
-  }
+  if (loading) return <p>Loading sweets...</p>;
 
   return (
-    <div className="container">
-      <h2 className="section-title">Available Sweets</h2>
+    <div className="auth-wrapper">
+      <div className="container">
+        <h2>User Dashboard</h2>
 
-      {error && <p className="error">{error}</p>}
+        {/* SEARCH */}
+        <div style={{ marginBottom: "20px" }}>
+          <input
+            placeholder="Search name"
+            value={filters.name}
+            onChange={(e) =>
+              setFilters({ ...filters, name: e.target.value })
+            }
+          />
 
-      {sweets.length === 0 ? (
-        <p>No sweets available</p>
-      ) : (
-        sweets.map((sweet) => (
-          <div key={sweet.id} className="card">
-            <div className="card-row">
-              <div className="card-info">
-                <strong>{sweet.name}</strong>
-                <div className="meta">
-                  ₹{sweet.price} • Stock: {sweet.quantity}
-                </div>
-              </div>
+          <input
+            placeholder="Category"
+            value={filters.category}
+            onChange={(e) =>
+              setFilters({ ...filters, category: e.target.value })
+            }
+          />
 
+          <input
+            type="number"
+            placeholder="Min price"
+            value={filters.minPrice}
+            onChange={(e) =>
+              setFilters({ ...filters, minPrice: e.target.value })
+            }
+          />
+
+          <input
+            type="number"
+            placeholder="Max price"
+            value={filters.maxPrice}
+            onChange={(e) =>
+              setFilters({ ...filters, maxPrice: e.target.value })
+            }
+          />
+
+          <button onClick={handleSearch}>Search</button>
+        </div>
+
+        {error && <p className="error">{error}</p>}
+
+        <ul>
+          {sweets.map((sweet) => (
+            <li key={sweet.id}>
+              <strong>{sweet.name}</strong> ({sweet.category}) — ₹
+              {sweet.price}
+              <br />
+              Stock: {sweet.quantity}
+              <br />
               <button
-                className="btn btn-primary"
-                disabled={sweet.quantity === 0}
                 onClick={() => handlePurchase(sweet.name)}
+                disabled={sweet.quantity === 0}
               >
                 Buy 1
               </button>
-            </div>
-          </div>
-        ))
-      )}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

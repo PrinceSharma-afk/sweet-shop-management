@@ -10,6 +10,7 @@ import { restockSweet } from "../api/inventory";
 export default function Admin() {
   const [sweets, setSweets] = useState([]);
   const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [error, setError] = useState("");
@@ -27,6 +28,9 @@ export default function Admin() {
     fetchSweets();
   }, []);
 
+  /* =========================
+     ADD SWEET
+  ========================= */
   const handleAddSweet = async (e) => {
     e.preventDefault();
     setError("");
@@ -34,10 +38,13 @@ export default function Admin() {
     try {
       await createSweet({
         name,
+        category,
         price: Number(price),
         quantity: Number(quantity),
       });
+
       setName("");
+      setCategory("");
       setPrice("");
       setQuantity("");
       fetchSweets();
@@ -46,6 +53,9 @@ export default function Admin() {
     }
   };
 
+  /* =========================
+     DELETE
+  ========================= */
   const handleDelete = async (name) => {
     try {
       await deleteSweet(name);
@@ -55,15 +65,21 @@ export default function Admin() {
     }
   };
 
-  const handleUpdatePrice = async (name, newPrice) => {
+  /* =========================
+     UPDATE
+  ========================= */
+  const handleUpdate = async (name, data) => {
     try {
-      await updateSweet(name, { price: Number(newPrice) });
+      await updateSweet(name, data);
       fetchSweets();
     } catch {
       setError("Update failed");
     }
   };
 
+  /* =========================
+     RESTOCK
+  ========================= */
   const handleRestock = async (name, qty) => {
     try {
       await restockSweet({ name, quantity: Number(qty) });
@@ -74,20 +90,27 @@ export default function Admin() {
   };
 
   return (
-    <div className="container">
-      <h2 className="section-title">Admin Dashboard</h2>
+    <div className="auth-wrapper">
+      <div className="container">
+        <h2>Admin Dashboard</h2>
 
-      {error && <p className="error">{error}</p>}
+        {error && <p className="error">{error}</p>}
 
-      {/* Add Sweet */}
-      <div className="card">
-        <h3>Add Sweet</h3>
-
+        {/* ADD SWEET */}
         <form onSubmit={handleAddSweet}>
+          <h3>Add Sweet</h3>
+
           <input
-            placeholder="Sweet Name"
+            placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            required
+          />
+
+          <input
+            placeholder="Category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             required
           />
 
@@ -101,58 +124,64 @@ export default function Admin() {
 
           <input
             type="number"
-            placeholder="Initial Quantity"
+            placeholder="Quantity"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             required
           />
 
-          <button className="btn btn-primary" type="submit">
-            Add Sweet
-          </button>
+          <button type="submit">Add Sweet</button>
         </form>
-      </div>
 
-      {/* Sweet List */}
-      {sweets.map((sweet) => (
-        <div key={sweet.id} className="card">
-          <div className="card-row">
-            <div className="card-info">
-              <strong>{sweet.name}</strong>
-              <div className="meta">
-                ₹{sweet.price} • Qty: {sweet.quantity}
+        <hr />
+
+        {/* SWEET LIST */}
+        <ul>
+          {sweets.map((sweet) => (
+            <li key={sweet.id} style={{ marginBottom: "15px" }}>
+              <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
+              <br />
+              Stock: {sweet.quantity}
+
+              <div style={{ marginTop: "8px" }}>
+                <input
+                  placeholder="New Category"
+                  onBlur={(e) =>
+                    e.target.value &&
+                    handleUpdate(sweet.name, {
+                      category: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  type="number"
+                  placeholder="New Price"
+                  onBlur={(e) =>
+                    e.target.value &&
+                    handleUpdate(sweet.name, {
+                      price: Number(e.target.value),
+                    })
+                  }
+                />
+
+                <input
+                  type="number"
+                  placeholder="Restock Qty"
+                  onBlur={(e) =>
+                    e.target.value &&
+                    handleRestock(sweet.name, e.target.value)
+                  }
+                />
+
+                <button onClick={() => handleDelete(sweet.name)}>
+                  Delete
+                </button>
               </div>
-            </div>
-
-            <div>
-              <input
-                type="number"
-                placeholder="New Price"
-                onBlur={(e) =>
-                  e.target.value &&
-                  handleUpdatePrice(sweet.name, e.target.value)
-                }
-              />
-
-              <input
-                type="number"
-                placeholder="Restock Qty"
-                onBlur={(e) =>
-                  e.target.value &&
-                  handleRestock(sweet.name, e.target.value)
-                }
-              />
-
-              <button
-                className="btn btn-danger"
-                onClick={() => handleDelete(sweet.name)}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

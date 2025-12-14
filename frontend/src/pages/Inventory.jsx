@@ -24,10 +24,9 @@ export default function Inventory() {
   }, []);
 
   const handleRestock = async (name) => {
-    setError("");
+    const qty = Number(restockQty[name] || 1);
 
-    const qty = Number(restockQty[name]);
-    if (!qty || qty <= 0) {
+    if (qty <= 0) {
       setError("Enter a valid restock quantity");
       return;
     }
@@ -50,48 +49,44 @@ export default function Inventory() {
   }
 
   return (
-    <div className="container">
-      <h2 className="section-title">Inventory Management</h2>
+    <div className="auth-wrapper">
+      <div className="container">
+        <h2>Inventory Management</h2>
 
-      {error && <p className="error">{error}</p>}
+        {error && <p className="error">{error}</p>}
 
-      {sweets.length === 0 ? (
-        <p>No sweets found</p>
-      ) : (
-        sweets.map((sweet) => (
-          <div key={sweet.id} className="card">
-            <div className="card-row">
-              <div className="card-info">
-                <strong>{sweet.name}</strong>
-                <div className="meta">
-                  ₹{sweet.price} • Current Stock: {sweet.quantity}
+        {sweets.length === 0 ? (
+          <p>No sweets found</p>
+        ) : (
+          <ul>
+            {sweets.map((sweet) => (
+              <li key={sweet.id} style={{ marginBottom: "15px" }}>
+                <strong>{sweet.name}</strong> ({sweet.category}) — ₹{sweet.price}
+                <br />
+                Stock: {sweet.quantity}
+
+                <div style={{ marginTop: "8px" }}>
+                  <input
+                    type="number"
+                    placeholder="Restock qty"
+                    value={restockQty[sweet.name] || ""}
+                    onChange={(e) =>
+                      setRestockQty({
+                        ...restockQty,
+                        [sweet.name]: e.target.value,
+                      })
+                    }
+                  />
+
+                  <button onClick={() => handleRestock(sweet.name)}>
+                    Restock
+                  </button>
                 </div>
-              </div>
-
-              <div>
-                <input
-                  type="number"
-                  placeholder="Restock Qty"
-                  value={restockQty[sweet.name] || ""}
-                  onChange={(e) =>
-                    setRestockQty({
-                      ...restockQty,
-                      [sweet.name]: e.target.value,
-                    })
-                  }
-                />
-
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => handleRestock(sweet.name)}
-                >
-                  Restock
-                </button>
-              </div>
-            </div>
-          </div>
-        ))
-      )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

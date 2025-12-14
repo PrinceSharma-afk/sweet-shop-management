@@ -1,17 +1,14 @@
 import api from "./axios";
 
-export const getAllSweets = () => {
-  return api.get("/sweets");
-};
+export const getAllSweets = () => api.get("/sweets");
 
-export const createSweet = (data) => {
-  return api.post("/sweets", data);
-};
+export const searchSweets = (params) =>
+  api.get("/sweets/search", { params });
 
-export const updateSweet = (name, data) => {
-  return api.put(`/sweets/${name}`, data);
-};
+export const createSweet = (data) => api.post("/sweets", data);
 
-export const deleteSweet = (name) => {
-  return api.delete(`/sweets/${name}`);
-};
+export const updateSweet = (name, data) =>
+  api.put(`/sweets/${name}`, data);
+
+export const deleteSweet = (name) =>
+  api.delete(`/sweets/${name}`);
