@@ -236,15 +236,46 @@ Test results are displayed in the console using Jest.
 
 ## Screenshots
 
-* Login and Registration
-* User Dashboard
-* Admin Dashboard
-* Inventory Management
-* Search and Filter Interface
+## 1. Login and Registration
 
-(Add screenshots here)
+**Description:** This screen allows users to register a new account or log in using their credentials. It validates user input and securely authenticates users using JWT-based authentication.
+
+![Login and Registration](screenshots/login.png)
 
 ---
+
+## 2. User Dashboard
+
+**Description:** The user dashboard provides an overview of user activities, available products, order history, and account-related actions in a structured interface.
+
+![User Dashboard](screenshots/user-dashboard.png)
+
+---
+
+## 3. Admin Dashboard
+
+**Description:** The admin dashboard enables administrators to manage users, monitor system activity, and perform high-level operations such as inventory control and reporting.
+
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+---
+
+## 4. Inventory Management
+
+**Description:** This interface allows admins to add, update, delete, and view items in the inventory. It ensures real-time synchronization with the database.
+
+![Inventory Management](screenshots/inventory-management.png)
+
+---
+
+## 5. Search and Filter Interface
+
+**Description:** The search and filter feature helps users quickly find items based on keywords, categories, price range, or availability.
+
+![Search and Filter Interface](screenshots/search-filter.png)
+
+---
+
 
 ## My AI Usage
 
