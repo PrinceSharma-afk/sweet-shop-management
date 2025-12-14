@@ -74,6 +74,7 @@ export default function Admin() {
   };
 
   return (
+    <div className="auth-wrapper">
     <div className="container">
       <h2>Admin Dashboard</h2>
 
@@ -144,6 +145,7 @@ export default function Admin() {
           </li>
         ))}
       </ul>
+    </div>
     </div>
   );
 }

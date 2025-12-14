@@ -30,18 +30,16 @@ export default function Login() {
   }
 };
 
-
-
-  return (
+return (
   <div className="auth-wrapper">
-    <div className="container">
+    <div className="auth-container">
       <h2>Login</h2>
 
       {error && <p className="error">{error}</p>}
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username</label><br />
+          <label>Username</label>
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -50,7 +48,7 @@ export default function Login() {
         </div>
 
         <div>
-          <label>Password</label><br />
+          <label>Password</label>
           <input
             type="password"
             value={password}
