@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getAllSweets, createSweet, deleteSweet } from "../api/sweets";
+import {
+  getAllSweets,
+  createSweet,
+  deleteSweet,
+  updateSweet,
+} from "../api/sweets";
 import { restockSweet } from "../api/inventory";
 
 export default function Admin() {
@@ -50,6 +55,24 @@ export default function Admin() {
     }
   };
 
+  const handleUpdatePrice = async (name, newPrice) => {
+    try {
+      await updateSweet(name, { price: Number(newPrice) });
+      fetchSweets();
+    } catch {
+      setError("Update failed");
+    }
+  };
+
+  const handleRestock = async (name, qty) => {
+    try {
+      await restockSweet({ name, quantity: Number(qty) });
+      fetchSweets();
+    } catch {
+      setError("Restock failed");
+    }
+  };
+
   return (
     <div>
       <h2>Admin Dashboard</h2>
@@ -91,13 +114,33 @@ export default function Admin() {
       {/* Sweet List */}
       <ul>
         {sweets.map((sweet) => (
-          <li key={sweet.id}>
+          <li key={sweet.id} style={{ marginBottom: "15px" }}>
             <strong>{sweet.name}</strong> — ₹{sweet.price}  
             (Qty: {sweet.quantity})
 
-            <button onClick={() => handleDelete(sweet.name)}>
-              Delete
-            </button>
+            <div>
+              <input
+                type="number"
+                placeholder="New Price"
+                onBlur={(e) =>
+                  e.target.value &&
+                  handleUpdatePrice(sweet.name, e.target.value)
+                }
+              />
+
+              <input
+                type="number"
+                placeholder="Restock Qty"
+                onBlur={(e) =>
+                  e.target.value &&
+                  handleRestock(sweet.name, e.target.value)
+                }
+              />
+
+              <button onClick={() => handleDelete(sweet.name)}>
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>
